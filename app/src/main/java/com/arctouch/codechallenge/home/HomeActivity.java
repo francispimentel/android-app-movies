@@ -31,6 +31,20 @@ public class HomeActivity extends BaseActivity {
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
 
+        retrieveGenres();
+    }
+
+    private void retrieveGenres() {
+        api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    Cache.setGenres(response.genres);
+                    retrieveUpcomingMovies();
+                });
+    }
+
+    private void retrieveUpcomingMovies() {
         api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

@@ -4,9 +4,9 @@ import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 public class Cache {
 
@@ -14,7 +14,10 @@ public class Cache {
 
     private static List<Movie> allMovies = new ArrayList<>();
 
-    private static Map<Long, List<Movie>> pages = new ConcurrentHashMap<>();
+    private static int loadedPageCount = 0;
+    private static int totalPages;
+
+    private static Set<Long> pages = new HashSet<>();
 
     public static List<Genre> getGenres() {
         return genres;
@@ -30,9 +33,22 @@ public class Cache {
     }
 
     public static void addMovies(Long page, List<Movie> movies) {
-        if (!pages.containsKey(page)) {
-            pages.put(page, movies);
+        if (!pages.contains(page)) {
+            pages.add(page);
             allMovies.addAll(movies);
+            loadedPageCount++;
         }
+    }
+
+    public static int getLoadedPageCount() {
+        return loadedPageCount;
+    }
+
+    public static void setTotalPages(int totalPages) {
+        Cache.totalPages = totalPages;
+    }
+
+    public static boolean isAllPagesLoaded() {
+        return loadedPageCount == totalPages;
     }
 }

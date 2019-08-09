@@ -64,6 +64,8 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
                         .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
                         .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                         .into(posterImageView);
+            } else {
+                posterImageView.setImageDrawable(homeActivity.getResources().getDrawable(R.drawable.ic_image_placeholder));
             }
         }
 
@@ -90,5 +92,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.bind(movies.get(position));
+    }
+
+    public void appendData(List<Movie> results) {
+        movies.addAll(results);
+        notifyDataSetChanged();
     }
 }

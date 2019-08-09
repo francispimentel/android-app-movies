@@ -7,4 +7,8 @@ import java.util.List;
 interface HomeView {
 
     void setMoviesList(List<Movie> results);
+
+    void appendMoviesList(List<Movie> results);
+
+    void setAllPagesLoaded(boolean allPagesLoaded);
 }

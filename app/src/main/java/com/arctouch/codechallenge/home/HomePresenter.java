@@ -5,4 +5,6 @@ interface HomePresenter {
     void loadInitialData();
 
     void dispose();
+
+    void loadNextPage();
 }

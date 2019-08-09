@@ -1,6 +1,7 @@
 package com.arctouch.codechallenge.home;
 
 import com.arctouch.codechallenge.api.TmdbApi;
+import com.arctouch.codechallenge.api.TmdbApiClient;
 import com.arctouch.codechallenge.data.Cache;
 import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
@@ -8,23 +9,14 @@ import com.arctouch.codechallenge.model.Movie;
 import java.util.ArrayList;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public class HomePresenterImpl implements HomePresenter {
 
-    protected TmdbApi api = new Retrofit.Builder()
-            .baseUrl(TmdbApi.URL)
-            .client(new OkHttpClient.Builder().build())
-            .addConverterFactory(MoshiConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(TmdbApi.class);
-
     private HomeView view;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public HomePresenterImpl(HomeView view) {
         this.view = view;
@@ -41,18 +33,24 @@ public class HomePresenterImpl implements HomePresenter {
         }
     }
 
+    @Override
+    public void dispose() {
+        compositeDisposable.dispose();
+    }
+
     private void retrieveGenres() {
-        api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
+        Disposable disposable = TmdbApiClient.getApi().genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     Cache.setGenres(response.genres);
                     retrieveUpcomingMovies();
                 });
+        compositeDisposable.add(disposable);
     }
 
     private void retrieveUpcomingMovies() {
-        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
+        Disposable disposable = TmdbApiClient.getApi().upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
@@ -67,5 +65,6 @@ public class HomePresenterImpl implements HomePresenter {
                     Cache.addMovies(1L, response.results);
                     view.setMoviesList(response.results);
                 });
+        compositeDisposable.add(disposable);
     }
 }

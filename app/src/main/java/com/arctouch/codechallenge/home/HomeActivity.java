@@ -33,6 +33,12 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
         presenter.loadInitialData();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.dispose();
+    }
+
 
     @Override
     public void setMoviesList(List<Movie> results) {

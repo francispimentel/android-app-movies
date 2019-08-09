@@ -4,7 +4,7 @@ import com.squareup.moshi.Json;
 
 import java.util.List;
 
-public class UpcomingMoviesResponse {
+public class MoviesResponse {
 
     public int page;
     public List<Movie> results;
@@ -16,9 +16,9 @@ public class UpcomingMoviesResponse {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof UpcomingMoviesResponse)) return false;
+        if (!(o instanceof MoviesResponse)) return false;
 
-        UpcomingMoviesResponse that = (UpcomingMoviesResponse) o;
+        MoviesResponse that = (MoviesResponse) o;
 
         if (page != that.page) return false;
         if (totalPages != that.totalPages) return false;
@@ -37,7 +37,7 @@ public class UpcomingMoviesResponse {
 
     @Override
     public String toString() {
-        return "UpcomingMoviesResponse{" +
+        return "MoviesResponse{" +
                 "page=" + page +
                 ", results=" + results +
                 ", totalPages=" + totalPages +

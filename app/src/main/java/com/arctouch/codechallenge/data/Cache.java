@@ -51,4 +51,10 @@ public class Cache {
     public static boolean isAllPagesLoaded() {
         return loadedPageCount == totalPages;
     }
+
+    public static void clearMovies() {
+        pages = new HashSet<>();
+        allMovies = new ArrayList<>();
+        loadedPageCount = 0;
+    }
 }

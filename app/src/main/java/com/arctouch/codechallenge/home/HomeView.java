@@ -10,5 +10,5 @@ interface HomeView {
 
     void appendMoviesList(List<Movie> results);
 
-    void setAllPagesLoaded(boolean allPagesLoaded);
+    void hideMask();
 }

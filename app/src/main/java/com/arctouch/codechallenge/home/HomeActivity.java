@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -18,8 +19,8 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     private RecyclerView recyclerView;
     private HomeAdapter homeAdapter;
     private ProgressBar progressBar;
+    private SearchView searchView;
     private HomePresenter presenter;
-    private boolean allPagesLoaded = false;
 
     public HomeActivity() {
         presenter = new HomePresenterImpl(this);
@@ -32,8 +33,33 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
 
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
+        this.searchView = findViewById(R.id.search);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                progressBar.setVisibility(View.VISIBLE);
+                presenter.triggerSearch(newText);
+                return false;
+            }
+        });
+
+        if (savedInstanceState != null) {
+            presenter.setSearchTerm(savedInstanceState.getString("query"));
+        }
 
         presenter.loadInitialData();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("query", searchView.getQuery().toString());
     }
 
     @Override
@@ -47,6 +73,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     public void setMoviesList(List<Movie> results) {
         homeAdapter = new HomeAdapter(results, this);
         recyclerView.setAdapter(homeAdapter);
+        recyclerView.clearOnScrollListeners();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             private int mPreviousTotal = 0;
@@ -66,7 +93,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
                     progressBar.setVisibility(View.GONE);
                 }
                 int visibleThreshold = 1;
-                if (!mLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold) && !allPagesLoaded) {
+                if (!mLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold) && !presenter.allPagesLoaded()) {
                     progressBar.setVisibility(View.VISIBLE);
                     presenter.loadNextPage();
                     mLoading = true;
@@ -83,11 +110,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView {
     }
 
     @Override
-    public void setAllPagesLoaded(boolean allPagesLoaded) {
-        this.allPagesLoaded = allPagesLoaded;
-
-        if (allPagesLoaded) {
-            progressBar.setVisibility(View.GONE);
-        }
+    public void hideMask() {
+        progressBar.setVisibility(View.GONE);
     }
 }

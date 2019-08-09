@@ -1,6 +1,5 @@
 package com.arctouch.codechallenge.home;
 
-import com.arctouch.codechallenge.api.TmdbApi;
 import com.arctouch.codechallenge.api.TmdbApiClient;
 import com.arctouch.codechallenge.data.Cache;
 import com.arctouch.codechallenge.model.Genre;
@@ -48,7 +47,7 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     private void retrieveGenres() {
-        Disposable disposable = TmdbApiClient.getApi().genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
+        Disposable disposable = TmdbApiClient.getApi().genres(TmdbApiClient.API_KEY, TmdbApiClient.DEFAULT_LANGUAGE)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
@@ -59,7 +58,7 @@ public class HomePresenterImpl implements HomePresenter {
     }
 
     private void retrieveUpcomingMovies(Long page) {
-        Disposable disposable = TmdbApiClient.getApi().upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, page, TmdbApi.DEFAULT_REGION)
+        Disposable disposable = TmdbApiClient.getApi().upcomingMovies(TmdbApiClient.API_KEY, TmdbApiClient.DEFAULT_LANGUAGE, page, TmdbApiClient.DEFAULT_REGION)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {

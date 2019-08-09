@@ -59,7 +59,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
             releaseDateTextView.setText(movie.releaseDate);
 
             String posterPath = movie.posterPath;
-            if (TextUtils.isEmpty(posterPath) == false) {
+            if (!TextUtils.isEmpty(posterPath)) {
                 Glide.with(itemView)
                         .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
                         .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))

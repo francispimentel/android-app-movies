@@ -38,7 +38,7 @@ public class DetailsActivity extends AppCompatActivity {
         overviewTextView.setText(movie.overview);
 
         String posterPath = movie.posterPath;
-        if (TextUtils.isEmpty(posterPath) == false) {
+        if (!TextUtils.isEmpty(posterPath)) {
             Glide.with(this)
                     .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
                     .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
@@ -46,7 +46,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         String backdropPath = movie.backdropPath;
-        if (TextUtils.isEmpty(backdropPath) == false) {
+        if (!TextUtils.isEmpty(backdropPath)) {
             Glide.with(this)
                     .load(movieImageUrlBuilder.buildBackdropUrl(backdropPath))
                     .into(backdropImageView);

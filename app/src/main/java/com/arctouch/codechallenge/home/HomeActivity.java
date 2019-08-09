@@ -58,7 +58,7 @@ public class HomeActivity extends BaseActivity {
                         }
                     }
 
-                    recyclerView.setAdapter(new HomeAdapter(response.results));
+                    recyclerView.setAdapter(new HomeAdapter(response.results, this));
                     progressBar.setVisibility(View.GONE);
                 });
     }

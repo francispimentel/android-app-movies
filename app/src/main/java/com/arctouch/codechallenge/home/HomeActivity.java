@@ -2,26 +2,25 @@ package com.arctouch.codechallenge.home;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.api.TmdbApi;
-import com.arctouch.codechallenge.base.BaseActivity;
-import com.arctouch.codechallenge.data.Cache;
-import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends AppCompatActivity implements HomeView {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private HomePresenter presenter;
+
+    public HomeActivity() {
+        presenter = new HomePresenterImpl(this);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,35 +30,13 @@ public class HomeActivity extends BaseActivity {
         this.recyclerView = findViewById(R.id.recyclerView);
         this.progressBar = findViewById(R.id.progressBar);
 
-        retrieveGenres();
+        presenter.loadInitialData();
     }
 
-    private void retrieveGenres() {
-        api.genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    Cache.setGenres(response.genres);
-                    retrieveUpcomingMovies();
-                });
-    }
 
-    private void retrieveUpcomingMovies() {
-        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    for (Movie movie : response.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
-                    }
-
-                    recyclerView.setAdapter(new HomeAdapter(response.results, this));
-                    progressBar.setVisibility(View.GONE);
-                });
+    @Override
+    public void setMoviesList(List<Movie> results) {
+        recyclerView.setAdapter(new HomeAdapter(results, this));
+        progressBar.setVisibility(View.GONE);
     }
 }
